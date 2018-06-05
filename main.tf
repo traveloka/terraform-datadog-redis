@@ -1,5 +1,9 @@
+locals {
+  monitor_enabled = "${var.enabled && length(var.recipients) > 0 ? 1 : 0}"
+}
+
 resource "datadog_timeboard" "redis" {
-  title       = "${var.product_domain} - ${var.cluster} - Redis"
+  title       = "${var.product_domain} - ${var.cluster} - ${var.environment} - Redis"
   description = "A generated timeboard for Redis"
 
   template_variable {
@@ -8,13 +12,19 @@ resource "datadog_timeboard" "redis" {
     prefix  = "cacheclusterid"
   }
 
+  template_variable {
+    default = "${var.environment}"
+    name    = "environment"
+    prefix  = "environment"
+  }
+
   graph {
     title     = "Bytes Used for Cache"
     viz       = "timeseries"
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.bytes_used_for_cache{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.bytes_used_for_cache{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -25,7 +35,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.cache_hits{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.cache_hits{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -36,7 +46,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.cache_misses{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.cache_misses{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -47,7 +57,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.cpuutilization{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.cpuutilization{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -58,7 +68,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.curr_connections{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.curr_connections{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -69,7 +79,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.curr_items{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.curr_items{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -80,7 +90,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.evictions{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.evictions{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -91,7 +101,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.freeable_memory{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.freeable_memory{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -102,7 +112,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.get_type_cmds{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.get_type_cmds{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -113,7 +123,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.network_bytes_in{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.network_bytes_in{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -124,7 +134,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.network_bytes_out{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.network_bytes_out{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -135,7 +145,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.new_connections{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.new_connections{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -146,7 +156,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.reclaimed{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.reclaimed{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -157,7 +167,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.replication_bytes{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.replication_bytes{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -168,7 +178,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.replication_lag{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.replication_lag{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -179,7 +189,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.save_in_progress{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.save_in_progress{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -190,7 +200,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.sorted_set_based_cmds{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.sorted_set_based_cmds{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -201,7 +211,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.set_type_cmds{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.set_type_cmds{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -212,7 +222,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.sorted_set_based_cmds{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.sorted_set_based_cmds{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
@@ -223,7 +233,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.swap_usage{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.swap_usage{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -234,7 +244,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.is_master{$cluster-name} by {cacheclusterid}"
+      q    = "avg:aws.elasticache.is_master{$cluster} by {cacheclusterid}"
       type = "area"
     }
   }
@@ -245,7 +255,7 @@ resource "datadog_timeboard" "redis" {
     autoscale = true
 
     request {
-      q    = "avg:aws.elasticache.geo_spatial_based_cmds{$cluster-name} by {cacheclusterid}.as_count()"
+      q    = "avg:aws.elasticache.geo_spatial_based_cmds{$cluster} by {cacheclusterid}.as_count()"
       type = "area"
     }
   }
