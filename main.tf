@@ -9,7 +9,7 @@ resource "datadog_timeboard" "redis" {
   template_variable {
     default = "${var.cluster}"
     name    = "cluster"
-    prefix  = "cacheclusterid"
+    prefix  = "name"
   }
 
   template_variable {
